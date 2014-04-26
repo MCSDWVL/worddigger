@@ -201,6 +201,28 @@ public class GameBoard : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	public void GetRidOfPiece(GamePiece piece, int newDepth, System.Random rand)
+	{
+
+		GameObject.Destroy(piece.gameObject);
+		if (PieceExplodeParticleObject)
+		{
+			var particle = GameObject.Instantiate(PieceExplodeParticleObject, piece.gameObject.transform.position, Quaternion.identity) as GameObject;
+			if (particle)
+			{
+				var system = particle.particleSystem;
+				system.startColor = piece.RegularColor;
+				system.Play();
+				GameObject.Destroy(particle, system.startLifetime);
+			}
+		}
+
+		// add preivew beneath
+		var newPiece = AddRandomPiece(piece.Row, piece.Col, newDepth, rand);
+		newPiece.MatchDepthColor();
+	}
+
+	//-------------------------------------------------------------------------
 	public void OnSend()
 	{
 		var wordlookup = GameObject.FindObjectOfType<WordLookup>();
@@ -214,24 +236,10 @@ public class GameBoard : MonoBehaviour
 			{
 				if (piece == null)
 					continue;
-				
-				GameObject.Destroy(piece.gameObject);
-				if (PieceExplodeParticleObject)
-				{
-					var particle = GameObject.Instantiate(PieceExplodeParticleObject, piece.gameObject.transform.position, Quaternion.identity) as GameObject;
-					if (particle)
-					{
-						var system = particle.particleSystem;
-						system.startColor = piece.RegularColor;
-						system.Play();
-						GameObject.Destroy(particle, system.startLifetime);
-					}
-				}
 
-				// add preivew beneath
-				var newPiece = AddRandomPiece(piece.Row, piece.Col, ActiveWordDepth + 1, _rand);
-				newPiece.MatchDepthColor();
+				GetRidOfPiece(piece, ActiveWordDepth+1, _rand);
 			}
+			Camera.main.GetComponent<CameraShaker>().Shake();
 		}
 		else
 		{
