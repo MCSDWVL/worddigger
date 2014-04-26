@@ -22,6 +22,8 @@ public class GameBoard : MonoBehaviour
 	public float Timer = 60;
 	public float AddTimePerPointScored = 1;
 
+	public GameObject PieceExplodeParticleObject;
+
 	//-------------------------------------------------------------------------
 	public void OnEnable()
 	{
@@ -214,6 +216,17 @@ public class GameBoard : MonoBehaviour
 					continue;
 				
 				GameObject.Destroy(piece.gameObject);
+				if (PieceExplodeParticleObject)
+				{
+					var particle = GameObject.Instantiate(PieceExplodeParticleObject, piece.gameObject.transform.position, Quaternion.identity) as GameObject;
+					if (particle)
+					{
+						var system = particle.particleSystem;
+						system.startColor = piece.RegularColor;
+						system.Play();
+						GameObject.Destroy(particle, system.startLifetime);
+					}
+				}
 
 				// add preivew beneath
 				var newPiece = AddRandomPiece(piece.Row, piece.Col, ActiveWordDepth + 1, _rand);
