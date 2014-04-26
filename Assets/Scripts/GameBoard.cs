@@ -7,6 +7,7 @@ public class GameBoard : MonoBehaviour
 	public char[] Letters = new char[]{'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',	'B', 'B','C', 'C','D', 'D', 'D', 'D','E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E','F', 'F','G', 'G', 'G','H', 'H','I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I','J','K','L', 'L', 'L', 'L','M', 'M','N', 'N', 'N', 'N', 'N', 'N','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O','P', 'P','Q','R', 'R', 'R', 'R', 'R', 'R','S', 'S', 'S', 'S','T', 'T', 'T', 'T', 'T', 'T','U', 'U', 'U', 'U','V', 'V','W', 'W','X','Y', 'Y','Z'};
 	public float PieceSpacing = 1f;
 
+	public List<GamePiece> ActiveWordPieces { get; private set; }
 	public string ActiveWord { get; private set; }
 	public int Score { get; set; }
 
@@ -18,6 +19,7 @@ public class GameBoard : MonoBehaviour
 	public void OnEnable()
 	{
 		ActiveWord = "";
+		ActiveWordPieces = new List<GamePiece>();
 	}
 
 	public int ScoreLookup(char letter)
@@ -109,14 +111,17 @@ public class GameBoard : MonoBehaviour
 		var alreadyInWord = piece.UsedInWord;
 		if (!alreadyInWord)
 		{
-			piece.UsedInWordPosition = ActiveWord.Length;
 			ActiveWord += piece.Letter;
-			Debug.Log(ActiveWord);
+			piece.UsedInWord = true;
+			ActiveWordPieces.Add(piece);
 		}
 		else
 		{
-			ActiveWord = ActiveWord.Remove(piece.UsedInWordPosition);
-			piece.UsedInWordPosition = -1;
+			var idx = ActiveWordPieces.IndexOf(piece);
+			if(idx >= 0)
+				ActiveWord = ActiveWord.Remove(idx, 1);
+			ActiveWordPieces.Remove(piece);
+			piece.UsedInWord = false;
 			Debug.Log(ActiveWord);
 		}
 	}
@@ -187,11 +192,11 @@ public class GameBoard : MonoBehaviour
 				if (piece.UsedInWord)
 				{
 					piece.ToggleLock();
-					piece.UsedInWordPosition = -1;
 				}
 			}
 		}
 
+		ActiveWordPieces.Clear();
 		ActiveWord = "";
 	}
 
@@ -212,7 +217,6 @@ public class GameBoard : MonoBehaviour
 				}
 				else if (!piece.Locked)
 				{
-					piece.UsedInWordPosition = -1;
 					piece.ToggleLock();
 				}
 			}

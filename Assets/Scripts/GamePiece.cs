@@ -19,8 +19,7 @@ public class GamePiece : MonoBehaviour
 	public int Score;
 	public GUIStyle Style;
 
-	public bool UsedInWord { get { return UsedInWordPosition >= 0; } }
-	public int UsedInWordPosition { get; set; }
+	public bool UsedInWord { get; set; }
 	public GameBoard Board { get; set; }
 
 	public Vector2 OffsetLetter = Vector2.zero;
@@ -31,7 +30,7 @@ public class GamePiece : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		UsedInWordPosition = -1;
+		UsedInWord = false;
 	}
 	
 	// Update is called once per frame
