@@ -17,12 +17,16 @@ public class GameBoard : MonoBehaviour
 
 	public GameObject ScoreBox;
 
+	public bool LockBadWords = false;
+
+	//-------------------------------------------------------------------------
 	public void OnEnable()
 	{
 		ActiveWord = "";
 		ActiveWordPieces = new List<GamePiece>();
 	}
 
+	//-------------------------------------------------------------------------
 	public int ScoreLookup(char letter)
 	{
 		var lower = char.ToLower(letter);
@@ -61,6 +65,7 @@ public class GameBoard : MonoBehaviour
 
 	private GamePiece[,] GamePieces;
 
+	//-------------------------------------------------------------------------
 	private GamePiece AddRandomPiece(int r, int c, int depth, System.Random rand)
 	{
 		var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
@@ -84,6 +89,7 @@ public class GameBoard : MonoBehaviour
 		return gamepieceScript;
 	}
 
+	//-------------------------------------------------------------------------
 	System.Random _rand = null;
 	public void FillBoard(int rows, int cols, System.Random rand = null)
 	{
@@ -105,11 +111,13 @@ public class GameBoard : MonoBehaviour
 		}
 	}
 
+	//-------------------------------------------------------------------------
 	public void Start()
 	{
 		FillBoard(6, 4);
 	}
 
+	//-------------------------------------------------------------------------
 	public void PieceToggled(GamePiece piece)
 	{
 		var alreadyInWord = piece.UsedInWord;
@@ -129,7 +137,6 @@ public class GameBoard : MonoBehaviour
 				ActiveWord = ActiveWord.Remove(idx, 1);
 			ActiveWordPieces.Remove(piece);
 			piece.UsedInWord = false;
-			Debug.Log(ActiveWord);
 		}
 	}
 
@@ -138,6 +145,7 @@ public class GameBoard : MonoBehaviour
 	public Vector2 ScoreOffset = Vector2.zero;
 	public Vector2 WordBox = Vector2.zero;
 
+	//-------------------------------------------------------------------------
 	private void OnGUI()
 	{
 		Vector2 boxPosition = ScoreBox ? ScoreBox.transform.position : Vector3.zero;
@@ -154,6 +162,7 @@ public class GameBoard : MonoBehaviour
 		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
 	}
 
+	//-------------------------------------------------------------------------
 	private int ScoreActiveWord()
 	{
 		var score = 0;
@@ -164,6 +173,7 @@ public class GameBoard : MonoBehaviour
 		return score;
 	}
 
+	//-------------------------------------------------------------------------
 	public void OnSend()
 	{
 		var wordlookup = GameObject.FindObjectOfType<WordLookup>();
@@ -175,14 +185,12 @@ public class GameBoard : MonoBehaviour
 			{
 				if (piece == null)
 					continue;
-				if (piece.UsedInWord)
-				{
-					GameObject.Destroy(piece.gameObject);
+				
+				GameObject.Destroy(piece.gameObject);
 
-					// add preivew beneath
-					var newPiece = AddRandomPiece(piece.Row, piece.Col, ActiveWordDepth + 1, _rand);
-					newPiece.MatchDepthColor();
-				}
+				// add preivew beneath
+				var newPiece = AddRandomPiece(piece.Row, piece.Col, ActiveWordDepth + 1, _rand);
+				newPiece.MatchDepthColor();
 			}
 		}
 		else
@@ -193,7 +201,7 @@ public class GameBoard : MonoBehaviour
 					continue;
 
 				// lock all the used pieces
-				if (piece.UsedInWord)
+				if (LockBadWords)
 					piece.ToggleLock();
 
 				piece.UsedInWord = false;
@@ -206,6 +214,7 @@ public class GameBoard : MonoBehaviour
 		ActiveWord = "";
 	}
 
+	//-------------------------------------------------------------------------
 	public void OnDig()
 	{
 		Debug.LogError("Deprecated, don't think I want to do this mechanic anymore");
@@ -227,6 +236,79 @@ public class GameBoard : MonoBehaviour
 					piece.ToggleLock();
 				}
 			}
+		}
+	}
+
+	public LineRenderer Line;
+	public float MouseActivateDistance = .3f;
+	public void Update()
+	{
+		if (Input.GetMouseButton(0))
+		{
+			var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			mouseWorldPos.z = 0;
+
+			var overlapPiece = Physics2D.OverlapPoint(mouseWorldPos);
+			if (overlapPiece)
+			{
+				var closeEnoughToActivate = (overlapPiece.transform.position - mouseWorldPos).sqrMagnitude < MouseActivateDistance;
+				if (closeEnoughToActivate)
+				{
+					var gamePiece = overlapPiece.GetComponent<GamePiece>();
+					if (gamePiece)
+					{
+						if (ActiveWord.Length > 0 && ActiveWordDepth != gamePiece.Depth)
+						{
+							OnSend();
+							return;
+						}
+
+						// HEY THEY'RE TRYING TO CHEAT!
+						if (ActiveWordPieces.Count > 0)
+						{
+							var lastPiece = ActiveWordPieces[ActiveWordPieces.Count - 1];
+							var colDif = lastPiece.Col - gamePiece.Col;
+							var rowDif = lastPiece.Row - gamePiece.Row;
+							if (rowDif <= -2 || rowDif >= 2 || colDif <= -2 || colDif >= 2)
+							{
+								OnSend();
+								return;
+							}
+						}
+
+						// TODO make sure user can't squeeze in the space between!
+						if (ActiveWordPieces.Contains(gamePiece))
+						{
+							// if it's the second from the end the user is moving backwards, want to remove the last piece
+							if (ActiveWordPieces.IndexOf(gamePiece) == ActiveWordPieces.Count - 2)
+							{
+								// remove the last piece
+								ActiveWordPieces.RemoveAt(ActiveWordPieces.Count - 1);
+								ActiveWord = ActiveWord.Remove(ActiveWord.Length - 1);
+							}
+						}
+						else
+						{
+							ActiveWordPieces.Add(gamePiece);
+							ActiveWord += gamePiece.Letter;
+							ActiveWordDepth = gamePiece.Depth;
+						}
+						Debug.Log(ActiveWord);
+					}
+				}
+			}
+
+			// update the line
+			Line.enabled = true;
+			Line.SetVertexCount(ActiveWordPieces.Count + 1);
+			for(var i = 0; i < ActiveWordPieces.Count; ++i)
+				Line.SetPosition(i, ActiveWordPieces[i].transform.position + new Vector3(0,0,-1));
+			Line.SetPosition(ActiveWordPieces.Count, mouseWorldPos + new Vector3(0, 0, -1));
+		}
+		else if (Input.GetMouseButtonUp(0))
+		{
+			OnSend();
+			Line.enabled = false;
 		}
 	}
 }

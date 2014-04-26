@@ -78,9 +78,10 @@ public class GamePiece : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	public bool ToggleOnClick = false;
 	private void OnMouseDown()
 	{
-		if (Locked || Preview)
+		if (Locked || Preview || !ToggleOnClick)
 			return;
 
 		Board.PieceToggled(this);
