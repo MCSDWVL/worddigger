@@ -20,6 +20,7 @@ public class GameBoard : MonoBehaviour
 
 	public bool LockBadWords = false;
 	public float Timer = 60;
+	public float AddTimePerPointScored = 1;
 
 	//-------------------------------------------------------------------------
 	public void OnEnable()
@@ -194,7 +195,9 @@ public class GameBoard : MonoBehaviour
 		var isValidWord = wordlookup.CheckValidWord(ActiveWord);
 		if (isValidWord)
 		{
-			Score += ScoreActiveWord();
+			var score = ScoreActiveWord();
+			Score += score;
+			Timer += AddTimePerPointScored * score;
 			foreach (var piece in ActiveWordPieces)
 			{
 				if (piece == null)
