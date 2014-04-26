@@ -1,6 +1,7 @@
 ProjectSettings/
 obj/
 Library/
+Temp/
 Assembly-CSharp.csproj
 Assembly-CSharp-vs.csproj
 worddigger.sln
