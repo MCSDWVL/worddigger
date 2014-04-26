@@ -6,7 +6,15 @@ public class GameBoard : MonoBehaviour
 	public GamePiece GamePiecePrefab;
 	public char[] Letters = new char[]{'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',	'B', 'B','C', 'C','D', 'D', 'D', 'D','E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E','F', 'F','G', 'G', 'G','H', 'H','I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I','J','K','L', 'L', 'L', 'L','M', 'M','N', 'N', 'N', 'N', 'N', 'N','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O','P', 'P','Q','R', 'R', 'R', 'R', 'R', 'R','S', 'S', 'S', 'S','T', 'T', 'T', 'T', 'T', 'T','U', 'U', 'U', 'U','V', 'V','W', 'W','X','Y', 'Y','Z'};
 	public float PieceSpacing = 1f;
-	
+
+	public string ActiveWord { get; private set; }
+	public int Score { get; set; }
+
+	public void OnEnable()
+	{
+		ActiveWord = "";
+	}
+
 	public int ScoreLookup(char letter)
 	{
 		var lower = char.ToLower(letter);
@@ -58,6 +66,7 @@ public class GameBoard : MonoBehaviour
 			{
 				var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
 				var gamepieceScript = newGamePiece.GetComponent<GamePiece>();
+				gamepieceScript.Board = this;
 
 				// position it
 				var pieceRealSize = newGamePiece.GetComponent<BoxCollider2D>().size.x;
@@ -77,5 +86,36 @@ public class GameBoard : MonoBehaviour
 	public void Start()
 	{
 		FillBoard(6, 4);
+	}
+
+	public void PieceToggled(GamePiece piece)
+	{
+		var alreadyInWord = piece.UsedInWord;
+		if (!alreadyInWord)
+		{
+			piece.UsedInWordPosition = ActiveWord.Length;
+			ActiveWord += piece.Letter;
+			Debug.Log(ActiveWord);
+		}
+		else
+		{
+			ActiveWord = ActiveWord.Remove(piece.UsedInWordPosition);
+			piece.UsedInWordPosition = -1;
+			Debug.Log(ActiveWord);
+		}
+	}
+
+	public GUIStyle Style;
+	public Vector2 WordOffset = Vector2.zero;
+	public Vector2 ScoreOffset = Vector2.zero;
+	public Vector2 WordBox = Vector2.zero;
+
+	private void OnGUI()
+	{
+		GUI.Label(new Rect(WordOffset.x, WordOffset.y, WordBox.x, WordBox.y), ActiveWord, Style);
+		var scoreStyle = new GUIStyle(Style);
+		scoreStyle.fontStyle = FontStyle.Bold;
+		scoreStyle.alignment = TextAnchor.MiddleRight;
+		GUI.Label(new Rect(ScoreOffset.x, ScoreOffset.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
 	}
 }

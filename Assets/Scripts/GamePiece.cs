@@ -7,7 +7,9 @@ public class GamePiece : MonoBehaviour
 	public int Score;
 	public GUIStyle Style;
 
+	public bool UsedInWord { get { return UsedInWordPosition >= 0; } }
 	public int UsedInWordPosition { get; set; }
+	public GameBoard Board { get; set; }
 
 	public Vector2 OffsetLetter = Vector2.zero;
 	public Vector2 OffsetScore = Vector2.zero;
@@ -35,5 +37,16 @@ public class GamePiece : MonoBehaviour
 		var pointStyle = new GUIStyle(Style);
 		pointStyle.fontSize /= 2;
 		GUI.Label(new Rect(screenPos.x + OffsetScore.x, screenPos.y + OffsetScore.y, PieceSize, PieceSize), "" + Score, pointStyle);
+	}
+
+	private void OnMouseDown()
+	{
+		Board.PieceToggled(this);
+
+		// do something to make it visible that this letter is selected!
+		if (UsedInWord)
+			Style.fontStyle = FontStyle.BoldAndItalic;
+		else
+			Style.fontStyle = FontStyle.Normal;
 	}
 }
