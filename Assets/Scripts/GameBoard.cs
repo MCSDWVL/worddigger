@@ -10,6 +10,9 @@ public class GameBoard : MonoBehaviour
 	public string ActiveWord { get; private set; }
 	public int Score { get; set; }
 
+	public int Rows { get; private set; }
+	public int Cols { get; private set; }
+
 	public void OnEnable()
 	{
 		ActiveWord = "";
@@ -53,32 +56,42 @@ public class GameBoard : MonoBehaviour
 
 	private GamePiece[,] GamePieces;
 
+	private void AddRandomPiece(int r, int c, System.Random rand)
+	{
+		var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
+		var gamepieceScript = newGamePiece.GetComponent<GamePiece>();
+		gamepieceScript.Board = this;
 
+		// position it
+		var pieceRealSize = newGamePiece.GetComponent<BoxCollider2D>().size.x;
+		newGamePiece.transform.position = new Vector2(c * (pieceRealSize + PieceSpacing), -r * (pieceRealSize + PieceSpacing));
+
+		// set the letter data
+		var letter = Letters[rand.Next(0, Letters.Length)];
+		gamepieceScript.Letter = letter;
+		gamepieceScript.Score = ScoreLookup(letter);
+
+		// add it to the array!
+		GamePieces[c, r] = gamepieceScript;
+	}
+
+	System.Random _rand = null;
 	public void FillBoard(int rows, int cols, System.Random rand = null)
 	{
 		if(rand == null)
 			rand = new System.Random();
+
+		_rand = rand;
+
+		Rows = rows;
+		Cols = cols;
 
 		GamePieces = new GamePiece[cols, rows];
 		for (var c = 0; c < cols; ++c)
 		{
 			for (var r = 0; r < rows; ++r)
 			{
-				var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
-				var gamepieceScript = newGamePiece.GetComponent<GamePiece>();
-				gamepieceScript.Board = this;
-
-				// position it
-				var pieceRealSize = newGamePiece.GetComponent<BoxCollider2D>().size.x;
-				newGamePiece.transform.position = new Vector2(c * (pieceRealSize + PieceSpacing), -r * (pieceRealSize + PieceSpacing));
-				
-				// set the letter data
-				var letter = Letters[rand.Next(0, Letters.Length)];
-				gamepieceScript.Letter = letter;
-				gamepieceScript.Score = ScoreLookup(letter);
-				
-				// add it to the array!
-				GamePieces[c, r] = gamepieceScript;
+				AddRandomPiece(r, c, _rand);
 			}
 		}
 	}
@@ -117,5 +130,66 @@ public class GameBoard : MonoBehaviour
 		scoreStyle.fontStyle = FontStyle.Bold;
 		scoreStyle.alignment = TextAnchor.MiddleRight;
 		GUI.Label(new Rect(ScoreOffset.x, ScoreOffset.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
+	}
+
+	private int ScoreActiveWord()
+	{
+		var score = 0;
+		foreach (var letter in ActiveWord)
+		{
+			score += ScoreLookup(letter);
+		}
+		return score;
+	}
+
+	public void OnSend()
+	{
+		var wordlookup = GameObject.FindObjectOfType<WordLookup>();
+		var isValidWord = wordlookup.CheckValidWord(ActiveWord);
+		if (isValidWord)
+		{
+			Score += ScoreActiveWord();
+			foreach (var piece in GamePieces)
+			{
+				if (piece == null)
+					continue;
+				if (piece.UsedInWord)
+				{
+					GameObject.Destroy(piece.gameObject);
+				}
+			}
+		}
+		else
+		{
+			foreach (var piece in GamePieces)
+			{
+				if (piece == null)
+					continue;
+
+				if (piece.UsedInWord)
+				{
+					piece.ToggleLock();
+					piece.UsedInWordPosition = -1;
+				}
+			}
+		}
+
+		ActiveWord = "";
+	}
+
+	public void OnDig()
+	{
+		// lock any piece left that isn't locked, and fill the rest
+		for (var c = 0; c < Cols; ++c)
+		{
+			for (var r = 0; r < Rows; ++r)
+			{
+				var piece = GamePieces[c, r];
+				if (piece == null)
+					AddRandomPiece(r, c, _rand);
+				else if (!piece.Locked)
+					piece.ToggleLock();
+			}
+		}
 	}
 }

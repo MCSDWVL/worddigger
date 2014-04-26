@@ -3,6 +3,11 @@ using System.Collections;
 
 public class GamePiece : MonoBehaviour 
 {
+	public bool Locked = false;
+
+	public Color LockColor = Color.black;
+	public Color LockTextColor = Color.grey;
+
 	public char Letter = 'X';
 	public int Score;
 	public GUIStyle Style;
@@ -41,6 +46,9 @@ public class GamePiece : MonoBehaviour
 
 	private void OnMouseDown()
 	{
+		if (Locked)
+			return;
+
 		Board.PieceToggled(this);
 
 		// do something to make it visible that this letter is selected!
@@ -48,5 +56,20 @@ public class GamePiece : MonoBehaviour
 			Style.fontStyle = FontStyle.BoldAndItalic;
 		else
 			Style.fontStyle = FontStyle.Normal;
+	}
+
+	public void ToggleLock()
+	{
+		if (!Locked)
+		{
+			var spriteRend = GetComponent<SpriteRenderer>();
+			spriteRend.color = LockColor;
+			Style.normal.textColor = LockTextColor;
+			Locked = true;
+		}
+		else
+		{
+			Debug.LogError("unlock not implemented!");
+		}
 	}
 }
