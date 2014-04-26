@@ -16,8 +16,10 @@ public class GameBoard : MonoBehaviour
 	public int Cols { get; private set; }
 
 	public GameObject ScoreBox;
+	public GameObject TimeBox;
 
 	public bool LockBadWords = false;
+	public float Timer = 60;
 
 	//-------------------------------------------------------------------------
 	public void OnEnable()
@@ -144,6 +146,7 @@ public class GameBoard : MonoBehaviour
 	public Vector2 WordOffset = Vector2.zero;
 	public Vector2 ScoreOffset = Vector2.zero;
 	public Vector2 WordBox = Vector2.zero;
+	public Vector2 TimeOffset = Vector2.zero;
 
 	//-------------------------------------------------------------------------
 	private void OnGUI()
@@ -160,6 +163,17 @@ public class GameBoard : MonoBehaviour
 
 		pos = screenPos + ScoreOffset;
 		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
+
+		// time box
+		var timeStyle = new GUIStyle(Style);
+		boxPosition = TimeBox ? TimeBox.transform.position : Vector3.zero;
+		screenPos = Camera.main.WorldToScreenPoint(boxPosition);
+		screenPos.y = Screen.height - screenPos.y;
+		pos = screenPos + TimeOffset;
+		timeStyle.alignment = TextAnchor.MiddleCenter;
+		var minutes = (int)Timer / 60;
+		var seconds = (int)Timer % 60;
+		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), string.Format("{0:D2}:{1:D2}", minutes, seconds), timeStyle);
 	}
 
 	//-------------------------------------------------------------------------
@@ -243,6 +257,11 @@ public class GameBoard : MonoBehaviour
 	public float MouseActivateDistance = .3f;
 	public void Update()
 	{
+		if (Timer <= 0)
+			return;
+
+		Timer -= Time.deltaTime;
+
 		if (Input.GetMouseButton(0))
 		{
 			var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -293,7 +312,6 @@ public class GameBoard : MonoBehaviour
 							ActiveWord += gamePiece.Letter;
 							ActiveWordDepth = gamePiece.Depth;
 						}
-						Debug.Log(ActiveWord);
 					}
 				}
 			}
