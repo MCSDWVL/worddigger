@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GamePiece : MonoBehaviour 
 {
+	public int Depth { get; set; }
+
 	public bool Locked = false;
 	public bool Preview = false;
 
@@ -27,17 +29,42 @@ public class GamePiece : MonoBehaviour
 
 	public float PieceSize = 64;
 
+	public int Row { get; set; }
+	public int Col { get; set; }
+
+	//-------------------------------------------------------------------------
 	// Use this for initialization
 	void Start () 
 	{
 		UsedInWord = false;
 	}
-	
-	// Update is called once per frame
-	void Update () 
+
+	//-------------------------------------------------------------------------
+	public void MatchDepthColor()
 	{
+		RegularColor = ColorForDepth(Depth);
+		var spriteRend = GetComponent<SpriteRenderer>();
+		spriteRend.color = RegularColor;
+		Style.normal.textColor = RegularTextColor;
 	}
 
+	//-------------------------------------------------------------------------
+	private Color ColorForDepth(int depth)
+	{
+		var rand = new System.Random(depth);
+
+		// don't want it to be too white, so let's say we have to distribute .75+.75+.75 between our three colors
+		var colorBudget = .75f * 3;
+		var red = (float)rand.NextDouble() * colorBudget;
+		colorBudget -= red;
+		var blue = (float)rand.NextDouble() * colorBudget;
+		colorBudget -= blue;
+		var green = (float)rand.NextDouble() * colorBudget;
+
+		return new Color(red, green, blue);
+	}
+
+	//-------------------------------------------------------------------------
 	private void OnGUI()
 	{
 		var screenPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -50,6 +77,7 @@ public class GamePiece : MonoBehaviour
 		GUI.Label(new Rect(screenPos.x + OffsetScore.x, screenPos.y + OffsetScore.y, PieceSize, PieceSize), "" + Score, pointStyle);
 	}
 
+	//-------------------------------------------------------------------------
 	private void OnMouseDown()
 	{
 		if (Locked || Preview)
@@ -64,6 +92,7 @@ public class GamePiece : MonoBehaviour
 			Style.fontStyle = FontStyle.Normal;
 	}
 
+	//-------------------------------------------------------------------------
 	public void TogglePreview()
 	{
 		if (!Preview)
@@ -82,6 +111,7 @@ public class GamePiece : MonoBehaviour
 		}
 	}
 
+	//-------------------------------------------------------------------------
 	public void ToggleLock()
 	{
 		if (!Locked)

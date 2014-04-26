@@ -7,6 +7,7 @@ public class GameBoard : MonoBehaviour
 	public char[] Letters = new char[]{'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',	'B', 'B','C', 'C','D', 'D', 'D', 'D','E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E','F', 'F','G', 'G', 'G','H', 'H','I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I','J','K','L', 'L', 'L', 'L','M', 'M','N', 'N', 'N', 'N', 'N', 'N','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O','P', 'P','Q','R', 'R', 'R', 'R', 'R', 'R','S', 'S', 'S', 'S','T', 'T', 'T', 'T', 'T', 'T','U', 'U', 'U', 'U','V', 'V','W', 'W','X','Y', 'Y','Z'};
 	public float PieceSpacing = 1f;
 
+	public int ActiveWordDepth = 0;
 	public List<GamePiece> ActiveWordPieces { get; private set; }
 	public string ActiveWord { get; private set; }
 	public int Score { get; set; }
@@ -60,10 +61,11 @@ public class GameBoard : MonoBehaviour
 
 	private GamePiece[,] GamePieces;
 
-	private GamePiece AddRandomPiece(int r, int c, System.Random rand)
+	private GamePiece AddRandomPiece(int r, int c, int depth, System.Random rand)
 	{
 		var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
 		var gamepieceScript = newGamePiece.GetComponent<GamePiece>();
+		gamepieceScript.Depth = depth;
 		gamepieceScript.Board = this;
 
 		// position it
@@ -74,6 +76,8 @@ public class GameBoard : MonoBehaviour
 		var letter = Letters[rand.Next(0, Letters.Length)];
 		gamepieceScript.Letter = letter;
 		gamepieceScript.Score = ScoreLookup(letter);
+		gamepieceScript.Row = r;
+		gamepieceScript.Col = c;
 
 		// add it to the array!
 		GamePieces[c, r] = gamepieceScript;
@@ -96,7 +100,7 @@ public class GameBoard : MonoBehaviour
 		{
 			for (var r = 0; r < rows; ++r)
 			{
-				AddRandomPiece(r, c, _rand);
+				AddRandomPiece(r, c, 0, _rand);
 			}
 		}
 	}
@@ -111,6 +115,9 @@ public class GameBoard : MonoBehaviour
 		var alreadyInWord = piece.UsedInWord;
 		if (!alreadyInWord)
 		{
+			if (ActiveWord.Length > 0 && ActiveWordDepth != piece.Depth)
+				return;
+			ActiveWordDepth = piece.Depth;
 			ActiveWord += piece.Letter;
 			piece.UsedInWord = true;
 			ActiveWordPieces.Add(piece);
@@ -164,36 +171,35 @@ public class GameBoard : MonoBehaviour
 		if (isValidWord)
 		{
 			Score += ScoreActiveWord();
-			for(var c = 0; c < Cols; ++c)
+			foreach (var piece in ActiveWordPieces)
 			{
-				for (var r = 0; r < Rows; ++r)
+				if (piece == null)
+					continue;
+				if (piece.UsedInWord)
 				{
-					var piece = GamePieces[c, r];
-					if (piece == null)
-						continue;
-					if (piece.UsedInWord)
-					{
-						GameObject.Destroy(piece.gameObject);
+					GameObject.Destroy(piece.gameObject);
 
-						// add preivew beneath
-						var newPiece = AddRandomPiece(r, c, _rand);
-						newPiece.TogglePreview();
-					}
+					// add preivew beneath
+					var newPiece = AddRandomPiece(piece.Row, piece.Col, ActiveWordDepth + 1, _rand);
+					newPiece.MatchDepthColor();
 				}
 			}
 		}
 		else
 		{
-			foreach (var piece in GamePieces)
+			foreach (var piece in ActiveWordPieces)
 			{
 				if (piece == null)
 					continue;
 
+				// lock all the used pieces
 				if (piece.UsedInWord)
-				{
 					piece.ToggleLock();
-				}
+
+				piece.UsedInWord = false;
 			}
+
+			ActiveWordPieces.Clear();
 		}
 
 		ActiveWordPieces.Clear();
@@ -202,6 +208,7 @@ public class GameBoard : MonoBehaviour
 
 	public void OnDig()
 	{
+		Debug.LogError("Deprecated, don't think I want to do this mechanic anymore");
 		ActiveWord = "";
 		// lock any piece left that isn't locked, and fill the rest
 		for (var c = 0; c < Cols; ++c)
@@ -210,7 +217,7 @@ public class GameBoard : MonoBehaviour
 			{
 				var piece = GamePieces[c, r];
 				if (piece == null)
-					AddRandomPiece(r, c, _rand);
+					AddRandomPiece(r, c, 0, _rand);
 				else if(piece.Preview)
 				{
 					piece.TogglePreview();
