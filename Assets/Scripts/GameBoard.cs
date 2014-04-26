@@ -201,10 +201,15 @@ public class GameBoard : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	public float BombChance = 0.05f;
 	public void GetRidOfPiece(GamePiece piece, int newDepth, System.Random rand)
 	{
+		if (piece.BeingDestroyed || piece.Fresh)
+			return;
 
 		GameObject.Destroy(piece.gameObject);
+		piece.BeingDestroyed = true;
+		// particle effects
 		if (PieceExplodeParticleObject)
 		{
 			var particle = GameObject.Instantiate(PieceExplodeParticleObject, piece.gameObject.transform.position, Quaternion.identity) as GameObject;
@@ -217,9 +222,32 @@ public class GameBoard : MonoBehaviour
 			}
 		}
 
+		// if it's a bomb destroy the neighbors!
+		if (piece.Bomb)
+		{
+			for (var c = Mathf.Max(piece.Col - 1, 0); c <= Mathf.Min(piece.Col + 1, Cols - 1); ++c)
+			{
+				for (var r = Mathf.Max(piece.Row - 1, 0); r <= Mathf.Min(piece.Row + 1, Rows - 1); ++r)
+				{
+					Debug.Log("trying to bomb r" + r + " c" + c + "from r" + piece.Row + " c" + piece.Col);
+					var bombedPiece = GamePieces[c, r];
+					if (!ActiveWordPieces.Contains(bombedPiece) && !bombedPiece.BeingDestroyed)
+						GetRidOfPiece(bombedPiece, newDepth, rand);
+				}
+			}
+		}
+
 		// add preivew beneath
 		var newPiece = AddRandomPiece(piece.Row, piece.Col, newDepth, rand);
 		newPiece.MatchDepthColor();
+		newPiece.Fresh = true;
+
+		var makeBomb = rand.NextDouble() < BombChance;
+		if (makeBomb)
+		{
+			Debug.Log("Making bomb");
+			newPiece.Bomb = true;
+		}
 	}
 
 	//-------------------------------------------------------------------------

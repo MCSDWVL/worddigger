@@ -32,6 +32,17 @@ public class GamePiece : MonoBehaviour
 	public int Row { get; set; }
 	public int Col { get; set; }
 
+	public bool BeingDestroyed { get; set; }
+	public bool Fresh { get; set; }
+
+	private bool _bomb = false;
+	public bool Bomb 
+	{
+		get { return _bomb; }
+		set { _bomb = value; if (BombSprite) BombSprite.SetActive(_bomb); }
+	}
+	public GameObject BombSprite;
+
 	//-------------------------------------------------------------------------
 	// Use this for initialization
 	void Start () 
@@ -129,5 +140,11 @@ public class GamePiece : MonoBehaviour
 			Style.normal.textColor = RegularTextColor;
 			Locked = false;
 		}
+	}
+
+	//-------------------------------------------------------------------------
+	public void Update()
+	{
+		Fresh = false;
 	}
 }
