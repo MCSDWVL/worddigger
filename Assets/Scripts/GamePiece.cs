@@ -55,9 +55,9 @@ public class GamePiece : MonoBehaviour
 
 		// don't want it to be too white, so let's say we have to distribute .75+.75+.75 between our three colors
 		var colorBudget = .75f * 3;
-		var red = (float)rand.NextDouble() * colorBudget;
+		var red = Mathf.Min((float)rand.NextDouble() * colorBudget, 1);
 		colorBudget -= red;
-		var blue = (float)rand.NextDouble() * colorBudget;
+		var blue = Mathf.Min((float)rand.NextDouble() * colorBudget, 1);
 		colorBudget -= blue;
 		var green = (float)rand.NextDouble() * colorBudget;
 
