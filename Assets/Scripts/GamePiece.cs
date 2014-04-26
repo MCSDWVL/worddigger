@@ -4,6 +4,13 @@ using System.Collections;
 public class GamePiece : MonoBehaviour 
 {
 	public bool Locked = false;
+	public bool Preview = false;
+
+	public Color RegularColor = new Color(1f, 0.54117647058f, 0.54117647058f, 1f);
+	public Color RegularTextColor = Color.white;
+
+	public Color PreviewColor = new Color(0.36862745098f, 0.36862745098f, 0.36862745098f, 1f);
+	public Color PreviewTextColor = new Color(0.56862745098f, 0.56862745098f, 0.56862745098f, 1f);
 
 	public Color LockColor = Color.black;
 	public Color LockTextColor = Color.grey;
@@ -46,7 +53,7 @@ public class GamePiece : MonoBehaviour
 
 	private void OnMouseDown()
 	{
-		if (Locked)
+		if (Locked || Preview)
 			return;
 
 		Board.PieceToggled(this);
@@ -56,6 +63,24 @@ public class GamePiece : MonoBehaviour
 			Style.fontStyle = FontStyle.BoldAndItalic;
 		else
 			Style.fontStyle = FontStyle.Normal;
+	}
+
+	public void TogglePreview()
+	{
+		if (!Preview)
+		{
+			var spriteRend = GetComponent<SpriteRenderer>();
+			spriteRend.color = PreviewColor;
+			Style.normal.textColor = PreviewTextColor;
+			Preview = true;
+		}
+		else
+		{
+			var spriteRend = GetComponent<SpriteRenderer>();
+			spriteRend.color = RegularColor;
+			Style.normal.textColor = RegularTextColor;
+			Preview = false;
+		}
 	}
 
 	public void ToggleLock()
@@ -69,7 +94,10 @@ public class GamePiece : MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("unlock not implemented!");
+			var spriteRend = GetComponent<SpriteRenderer>();
+			spriteRend.color = RegularColor;
+			Style.normal.textColor = RegularTextColor;
+			Locked = false;
 		}
 	}
 }

@@ -56,7 +56,7 @@ public class GameBoard : MonoBehaviour
 
 	private GamePiece[,] GamePieces;
 
-	private void AddRandomPiece(int r, int c, System.Random rand)
+	private GamePiece AddRandomPiece(int r, int c, System.Random rand)
 	{
 		var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
 		var gamepieceScript = newGamePiece.GetComponent<GamePiece>();
@@ -73,6 +73,7 @@ public class GameBoard : MonoBehaviour
 
 		// add it to the array!
 		GamePieces[c, r] = gamepieceScript;
+		return gamepieceScript;
 	}
 
 	System.Random _rand = null;
@@ -149,13 +150,21 @@ public class GameBoard : MonoBehaviour
 		if (isValidWord)
 		{
 			Score += ScoreActiveWord();
-			foreach (var piece in GamePieces)
+			for(var c = 0; c < Cols; ++c)
 			{
-				if (piece == null)
-					continue;
-				if (piece.UsedInWord)
+				for (var r = 0; r < Rows; ++r)
 				{
-					GameObject.Destroy(piece.gameObject);
+					var piece = GamePieces[c, r];
+					if (piece == null)
+						continue;
+					if (piece.UsedInWord)
+					{
+						GameObject.Destroy(piece.gameObject);
+
+						// add preivew beneath
+						var newPiece = AddRandomPiece(r, c, _rand);
+						newPiece.TogglePreview();
+					}
 				}
 			}
 		}
@@ -179,6 +188,7 @@ public class GameBoard : MonoBehaviour
 
 	public void OnDig()
 	{
+		ActiveWord = "";
 		// lock any piece left that isn't locked, and fill the rest
 		for (var c = 0; c < Cols; ++c)
 		{
@@ -187,8 +197,15 @@ public class GameBoard : MonoBehaviour
 				var piece = GamePieces[c, r];
 				if (piece == null)
 					AddRandomPiece(r, c, _rand);
+				else if(piece.Preview)
+				{
+					piece.TogglePreview();
+				}
 				else if (!piece.Locked)
+				{
+					piece.UsedInWordPosition = -1;
 					piece.ToggleLock();
+				}
 			}
 		}
 	}
