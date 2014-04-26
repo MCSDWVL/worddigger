@@ -13,6 +13,8 @@ public class GameBoard : MonoBehaviour
 	public int Rows { get; private set; }
 	public int Cols { get; private set; }
 
+	public GameObject ScoreBox;
+
 	public void OnEnable()
 	{
 		ActiveWord = "";
@@ -126,11 +128,18 @@ public class GameBoard : MonoBehaviour
 
 	private void OnGUI()
 	{
-		GUI.Label(new Rect(WordOffset.x, WordOffset.y, WordBox.x, WordBox.y), ActiveWord, Style);
+		Vector2 boxPosition = ScoreBox ? ScoreBox.transform.position : Vector3.zero;
+		Vector2 screenPos = Camera.main.WorldToScreenPoint(boxPosition);
+		screenPos.y = Screen.height - screenPos.y;
+
+		var pos = screenPos + WordOffset;
+		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), ActiveWord, Style);
 		var scoreStyle = new GUIStyle(Style);
 		scoreStyle.fontStyle = FontStyle.Bold;
 		scoreStyle.alignment = TextAnchor.MiddleRight;
-		GUI.Label(new Rect(ScoreOffset.x, ScoreOffset.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
+
+		pos = screenPos + ScoreOffset;
+		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
 	}
 
 	private int ScoreActiveWord()
