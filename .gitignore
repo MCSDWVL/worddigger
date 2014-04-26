@@ -1,0 +1,8 @@
+ProjectSettings/
+obj/
+Library/
+Assembly-CSharp.csproj
+Assembly-CSharp-vs.csproj
+worddigger.sln
+worddigger.v11.suo
+worddigger-csharp.sln
