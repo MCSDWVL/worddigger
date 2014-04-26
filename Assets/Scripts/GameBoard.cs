@@ -175,6 +175,16 @@ public class GameBoard : MonoBehaviour
 		var minutes = (int)Timer / 60;
 		var seconds = (int)Timer % 60;
 		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), string.Format("{0:D2}:{1:D2}", minutes, seconds), timeStyle);
+
+		// EMERGENCY COUNTDOWN
+		if (minutes == 0 && seconds < 10)
+		{
+			var emergencyStyle = new GUIStyle(Style);
+			emergencyStyle.normal.textColor = new Color(1, 1, 1, 0.3f);
+			emergencyStyle.fontSize = 500;
+			emergencyStyle.alignment = TextAnchor.MiddleCenter;
+			GUI.Label(new Rect(0, 0, Screen.width, Screen.height), string.Format("{0:D2}", seconds), emergencyStyle);
+		}
 	}
 
 	//-------------------------------------------------------------------------
