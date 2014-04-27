@@ -1,0 +1,24 @@
+super powers
+	rainbow		-		all to lowest color on board
+	shuffle		-		swap letters without changing
+	nuke		-		destroy every tile on board
+	2x			-		double score for 10s
+	stopwatch	-		stop timer for 10s
+	shades		-		free combine for 10s (can match any color but goes back to what it was after)
+				-		randomize color of every piece on board?  (would kind of suck)
+
+wat
+	.64*6 + x*5 = 8.43*.64
+	6 + x*5/.64 = 8.43
+	x*5/.64 = 2.43
+	x = .64*2.43/5
+
+juice
+	color transition
+	animate in new tiles
+	pfx
+	sound
+	better camera fx for bombs
+	highlight good things (bombs, powerups)
+	animate score increase
+	increase score with depth

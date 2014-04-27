@@ -10,6 +10,9 @@ public class GameButton : MonoBehaviour
 	public bool isDigButton = false;
 	public bool isPlayButton = false;
 	public bool isResetButton = false;
+	public bool isSuperButton = false;
+
+	public enum SuperPower { None, AllColor, AllExplode, StopTimer, ScoreMultiplier, IgnoreColor, Shuffle };
 
 	public bool ButtonEnabled = true;
 	
@@ -56,6 +59,9 @@ public class GameButton : MonoBehaviour
 		else if (isResetButton)
 		{
 			Application.LoadLevel("MainGame");
+		}
+		else if (isSuperButton)
+		{
 		}
 	}
 }
