@@ -5,6 +5,8 @@ public class GameBoard : MonoBehaviour
 {
 	public GamePiece GamePiecePrefab;
 	public char[] Letters = new char[]{'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',	'B', 'B','C', 'C','D', 'D', 'D', 'D','E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E','F', 'F','G', 'G', 'G','H', 'H','I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I','J','K','L', 'L', 'L', 'L','M', 'M','N', 'N', 'N', 'N', 'N', 'N','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O','P', 'P','Q','R', 'R', 'R', 'R', 'R', 'R','S', 'S', 'S', 'S','T', 'T', 'T', 'T', 'T', 'T','U', 'U', 'U', 'U','V', 'V','W', 'W','X','Y', 'Y','Z'};
+	public string LettersString = "EEEEEEEEEEEEAAAAAAAAAIIIIIIIIIOOOOOOOONNNNNNRRRRRRTTTTTTLLLLSSSSUUUUDDDDGGGBBCCMMPPFFHHVVWWYYKJXQZ";
+	public char[][] ShuffledDepthLetters;
 	public float PieceSpacing = 1f;
 
 	public int LowestDepth { get; private set; }
@@ -77,6 +79,14 @@ public class GameBoard : MonoBehaviour
 	private GamePiece[,] GamePieces;
 
 	//-------------------------------------------------------------------------
+	private char GetLetterForDepthAndPosition(int depth, int r, int c, System.Random rand)
+	{
+		if (depth < ShuffledDepthLetters.Length)
+			return ShuffledDepthLetters[depth][r * Cols + c];
+		return Letters[rand.Next(0, Letters.Length)];
+	}
+
+	//-------------------------------------------------------------------------
 	private GamePiece AddRandomPiece(int r, int c, int depth, System.Random rand)
 	{
 		var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
@@ -89,7 +99,7 @@ public class GameBoard : MonoBehaviour
 		newGamePiece.transform.position = new Vector2(c * (pieceRealSize + PieceSpacing), -r * (pieceRealSize + PieceSpacing));
 
 		// set the letter data
-		var letter = Letters[rand.Next(0, Letters.Length)];
+		var letter = GetLetterForDepthAndPosition(depth, r, c, rand);
 		gamepieceScript.Letter = letter;
 		gamepieceScript.Score = ScoreLookup(letter);
 		gamepieceScript.Row = r;
@@ -116,6 +126,21 @@ public class GameBoard : MonoBehaviour
 			rand = new System.Random();
 
 		_rand = rand;
+
+		// create shuffled depth strings
+		var prebakedDepths = 100;
+		ShuffledDepthLetters = new char[prebakedDepths][];
+		for (var i = 0; i < prebakedDepths; ++i)
+		{
+			ShuffledDepthLetters[i] = LettersString.ToCharArray();
+			for (var x = 0; x < ShuffledDepthLetters[i].Length; ++x)
+			{
+				var swapIdx = _rand.Next(0, ShuffledDepthLetters[i].Length);
+				var letter = ShuffledDepthLetters[i][x];
+				ShuffledDepthLetters[i][x] = ShuffledDepthLetters[i][swapIdx];
+				ShuffledDepthLetters[i][swapIdx] = letter;
+			}
+		}
 
 		Rows = rows;
 		Cols = cols;

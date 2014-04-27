@@ -32,7 +32,20 @@ public class WordLookup : MonoBehaviour
         return (theEntry.IndexOf("," + restOfWord + ",") != -1);
     }
 
-    
+	/*
+	public string GetValidWordOfLength(int length, System.Random rand = null)
+	{
+		if (length < 2 || length > 7)
+			return "";
+
+		if (rand == null)
+			rand = new System.Random();
+
+		var someEntry = WordList.ThreeLetterPrefixWordList[WordList.ThreeLetterKeys[rand.Next(0, WordList.ThreeLetterKeys.Count)]];
+
+			
+	}
+	*/
 
     //-----------------------------------------------------------------------------
     public void Start()

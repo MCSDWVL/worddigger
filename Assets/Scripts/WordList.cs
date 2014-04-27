@@ -3463,6 +3463,7 @@ public class WordList : MonoBehaviour
     };
     #endregion
 
+
     #region Other Word List
     [System.NonSerialized]
     public static string OtherWordList = "aabadaeagidedifahainalamaneefyareheliobemenodoer,ashisitatesof,aweti,axi,ayexugohmi,bi,boi,byommonuhoopa,ch,gumunyupe,jor,ka,kostour,ky,lowox,my,oy,ph,pi,po,qi,us,ut,zo";
@@ -3481,6 +3482,13 @@ public class WordList : MonoBehaviour
     static string re7 = "(,[a-z]{8})([a-z]*)7";
     static string re8 = "(,[a-z]{9})([a-z]*)8";
     static string re9 = "(,[a-z]{10})([a-z]*)9";
+
+	//-----------------------------------------------------------------------------
+	public static List<string> ThreeLetterKeys;
+	public void Awake()
+	{
+		ThreeLetterKeys = new List<string>(ThreeLetterPrefixWordList.Keys);
+	}
 
     //-----------------------------------------------------------------------------
     public static string DecompressString(string inString, string first3, bool saveDecompressedValue = true)
