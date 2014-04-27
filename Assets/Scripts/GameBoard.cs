@@ -151,35 +151,38 @@ public class GameBoard : MonoBehaviour
 	public GUIStyle Style;
 	public Vector2 WordOffset = Vector2.zero;
 	public Vector2 ScoreOffset = Vector2.zero;
-	public Vector2 WordBox = Vector2.zero;
+	public Vector2 BoxDimensionHack = Vector2.zero;
 	public Vector2 TimeOffset = Vector2.zero;
 
 	//-------------------------------------------------------------------------
 	private void OnGUI()
 	{
-		Vector2 boxPosition = ScoreBox ? ScoreBox.transform.position : Vector3.zero;
+		//Vector2 boxPosition = ScoreBox ? ScoreBox.transform.position : Vector3.zero;
+		var box = TimeBox;
+		Vector2 boxPosition = box ? box.transform.position : Vector3.zero;
 		Vector2 screenPos = Camera.main.WorldToScreenPoint(boxPosition);
 		screenPos.y = Screen.height - screenPos.y;
 
 		var pos = screenPos + WordOffset;
-		//GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), ActiveWord, Style);
+		//GUI.Label(new Rect(pos.x - BoxDimensionHack.x / 2, pos.y, BoxDimensionHack.x, BoxDimensionHack.y), ActiveWord, Style);
 		var scoreStyle = new GUIStyle(Style);
 		scoreStyle.fontStyle = FontStyle.Bold;
-		scoreStyle.alignment = TextAnchor.MiddleCenter;
+		scoreStyle.alignment = TextAnchor.MiddleLeft;
 
 		pos = screenPos + ScoreOffset;
-		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
+		GUI.Label(new Rect(pos.x - BoxDimensionHack.x / 2, pos.y, BoxDimensionHack.x, BoxDimensionHack.y), "" + Score, scoreStyle);
 
 		// time box
+		box = TimeBox;
 		var timeStyle = new GUIStyle(Style);
-		boxPosition = TimeBox ? TimeBox.transform.position : Vector3.zero;
+		boxPosition = box ? box.transform.position : Vector3.zero;
 		screenPos = Camera.main.WorldToScreenPoint(boxPosition);
 		screenPos.y = Screen.height - screenPos.y;
 		pos = screenPos + TimeOffset;
-		timeStyle.alignment = TextAnchor.MiddleCenter;
+		timeStyle.alignment = TextAnchor.MiddleRight;
 		var minutes = (int)Timer / 60;
 		var seconds = (int)Timer % 60;
-		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), string.Format("{0:D2}:{1:D2}", minutes, seconds), timeStyle);
+		GUI.Label(new Rect(pos.x - BoxDimensionHack.x / 2, pos.y, BoxDimensionHack.x, BoxDimensionHack.y), string.Format("{0:D2}:{1:D2}", minutes, seconds), timeStyle);
 
 		// EMERGENCY COUNTDOWN
 		if (minutes == 0 && seconds < 10)
