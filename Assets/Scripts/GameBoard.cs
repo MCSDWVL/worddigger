@@ -101,7 +101,7 @@ public class GameBoard : MonoBehaviour
 		// set the letter data
 		var letter = GetLetterForDepthAndPosition(depth, r, c, rand);
 		gamepieceScript.Letter = letter;
-		gamepieceScript.Score = ScoreLookup(letter);
+		gamepieceScript.Score = ScoreLookup(letter) + (int)(depth/5);
 		gamepieceScript.Row = r;
 		gamepieceScript.Col = c;
 
@@ -233,12 +233,14 @@ public class GameBoard : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	private float[] LengthMultipliers = new float[] { 0, 0, 1, 1, 1.1f, 1.5f, 2, 2 };
 	private int ScoreActiveWord()
 	{
 		var score = 0;
+		var lengthMult = (ActiveWord.Length < LengthMultipliers.Length) ? LengthMultipliers[ActiveWord.Length] : LengthMultipliers[LengthMultipliers.Length - 1];
 		foreach (var letter in ActiveWord)
 		{
-			score += GamePiece.Multiplier * ScoreLookup(letter);
+			score += (int)(lengthMult * GamePiece.Multiplier * ScoreLookup(letter));
 		}
 		return score;
 	}
