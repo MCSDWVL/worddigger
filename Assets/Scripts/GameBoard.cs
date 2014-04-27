@@ -162,10 +162,10 @@ public class GameBoard : MonoBehaviour
 		screenPos.y = Screen.height - screenPos.y;
 
 		var pos = screenPos + WordOffset;
-		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), ActiveWord, Style);
+		//GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), ActiveWord, Style);
 		var scoreStyle = new GUIStyle(Style);
 		scoreStyle.fontStyle = FontStyle.Bold;
-		scoreStyle.alignment = TextAnchor.MiddleRight;
+		scoreStyle.alignment = TextAnchor.MiddleCenter;
 
 		pos = screenPos + ScoreOffset;
 		GUI.Label(new Rect(pos.x - WordBox.x / 2, pos.y, WordBox.x, WordBox.y), "" + Score, scoreStyle);
