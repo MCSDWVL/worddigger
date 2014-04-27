@@ -34,6 +34,7 @@ public class GameBoard : MonoBehaviour
 		ActiveWord = "";
 		ActiveWordPieces = new List<GamePiece>();
 		Instance = this;
+		GamePiece.Multiplier = 1;
 	}
 
 	//-------------------------------------------------------------------------
@@ -96,6 +97,10 @@ public class GameBoard : MonoBehaviour
 
 		// add it to the array!
 		GamePieces[c, r] = gamepieceScript;
+
+		// are shades active?!
+		if (IgnoreColorTime > 0)
+			gamepieceScript.IgnoreDepth = true;
 
 		// track lowest depth
 		if (depth > LowestDepth)
@@ -207,7 +212,7 @@ public class GameBoard : MonoBehaviour
 		var score = 0;
 		foreach (var letter in ActiveWord)
 		{
-			score += ScoreLookup(letter);
+			score += GamePiece.Multiplier * ScoreLookup(letter);
 		}
 		return score;
 	}
@@ -338,7 +343,30 @@ public class GameBoard : MonoBehaviour
 			return;
 		}
 
-		Timer -= Time.deltaTime;
+		if (IgnoreColorTime > 0)
+		{
+			IgnoreColorTime -= Time.deltaTime;
+			if (IgnoreColorTime <= 0)
+			{
+				foreach (var piece in GamePieces)
+				{
+					piece.IgnoreDepth = false;
+					piece.MatchDepthColor();
+				}
+			}
+		}
+
+		if (ScoreMultiplyTime > 0)
+		{
+			ScoreMultiplyTime -= Time.deltaTime;
+			if (ScoreMultiplyTime <= 0)
+				GamePiece.Multiplier /= 2;
+		}
+
+		if (TimeStopTime <= 0)
+			Timer -= Time.deltaTime;
+		else
+			TimeStopTime -= Time.deltaTime;
 
 		if (Input.GetMouseButton(0))
 		{
@@ -354,7 +382,7 @@ public class GameBoard : MonoBehaviour
 					var gamePiece = overlapPiece.GetComponent<GamePiece>();
 					if (gamePiece)
 					{
-						if (ActiveWord.Length > 0 && ActiveWordDepth != gamePiece.Depth)
+						if (ActiveWord.Length > 0 && ActiveWordDepth != gamePiece.Depth && !gamePiece.IgnoreDepth)
 						{
 							OnSend();
 							return;
@@ -416,5 +444,53 @@ public class GameBoard : MonoBehaviour
 			piece.Depth = LowestDepth;
 			piece.MatchDepthColor();
 		}
+	}
+
+	public void ApplyExplodePower()
+	{
+		foreach (var piece in GamePieces)
+			GetRidOfPiece(piece, piece.Depth + 1, _rand);
+	}
+
+	public float IgnoreColorTime = 0f;
+	public float IgnoreColorPowerupSetTime = 10;
+	public void ApplyIgnoreColorPower()
+	{
+		IgnoreColorTime = IgnoreColorPowerupSetTime;
+		foreach (var piece in GamePieces)
+		{
+			piece.IgnoreDepth = true;
+			piece.MatchDepthColor();
+		}
+	}
+
+	public float ScoreMultiplyTime = 0f;
+	public float ScoreMultiplyPowerupSetTime = 10;
+	public void ApplyScoreMultiplierPower()
+	{
+		ScoreMultiplyTime = ScoreMultiplyPowerupSetTime;
+		GamePiece.Multiplier *= 2;
+	}
+
+	public void ApplyShufflePower()
+	{
+		for (var c = 0; c < Cols; ++c)
+		{
+			for (var r = 0; r < Rows; ++r)
+			{
+				var letter = GamePieces[c, r].Letter;
+				var swapRow = _rand.Next(0, Rows);
+				var swapCol = _rand.Next(0, Cols);
+				GamePieces[c, r].Letter = GamePieces[swapCol, swapRow].Letter;
+				GamePieces[swapCol, swapRow].Letter = letter;
+			}
+		}
+	}
+
+	public float TimeStopTime = 0f;
+	public float TimeStopTimePowerupSetTime = 10;
+	public void ApplyStopTimePower()
+	{
+		TimeStopTime = TimeStopTimePowerupSetTime;
 	}
 }

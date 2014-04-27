@@ -69,6 +69,21 @@ public class GameButton : MonoBehaviour
 				case SuperPower.AllColor:
 					_board.ApplyAllColorPower();
 					break;
+				case SuperPower.AllExplode:
+					_board.ApplyExplodePower();
+					break;
+				case SuperPower.IgnoreColor:
+					_board.ApplyIgnoreColorPower();
+					break;
+				case SuperPower.ScoreMultiplier:
+					_board.ApplyScoreMultiplierPower();
+					break;
+				case SuperPower.Shuffle:
+					_board.ApplyShufflePower();
+					break;
+				case SuperPower.StopTimer:
+					_board.ApplyStopTimePower();
+					break;
 				default:
 					Debug.LogError("Oops don't know how to handle power " + Power);
 					break;

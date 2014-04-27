@@ -29,6 +29,8 @@ public class GamePiece : MonoBehaviour
 
 	public float PieceSize = 64;
 
+	public bool IgnoreDepth { get; set; }
+
 	public int Row { get; set; }
 	public int Col { get; set; }
 
@@ -43,6 +45,8 @@ public class GamePiece : MonoBehaviour
 	}
 	public GameObject BombSprite;
 
+	public static int Multiplier { get; set; }
+
 	//-------------------------------------------------------------------------
 	// Use this for initialization
 	void Start () 
@@ -53,7 +57,10 @@ public class GamePiece : MonoBehaviour
 	//-------------------------------------------------------------------------
 	public void MatchDepthColor()
 	{
-		RegularColor = ColorForDepth(Depth);
+		if (!IgnoreDepth)
+			RegularColor = ColorForDepth(Depth);
+		else
+			RegularColor = Color.grey;
 		var spriteRend = GetComponent<SpriteRenderer>();
 		spriteRend.color = RegularColor;
 		Style.normal.textColor = RegularTextColor;
@@ -107,7 +114,7 @@ public class GamePiece : MonoBehaviour
 
 		var pointStyle = new GUIStyle(Style);
 		pointStyle.fontSize /= 2;
-		GUI.Label(new Rect(screenPos.x + OffsetScore.x, screenPos.y + OffsetScore.y, PieceSize, PieceSize), "" + Score, pointStyle);
+		GUI.Label(new Rect(screenPos.x + OffsetScore.x, screenPos.y + OffsetScore.y, PieceSize, PieceSize), "" + (Multiplier*Score), pointStyle);
 	}
 
 	//-------------------------------------------------------------------------

@@ -6,6 +6,7 @@ super powers
 	stopwatch	-		stop timer for 10s
 	shades		-		free combine for 10s (can match any color but goes back to what it was after)
 				-		randomize color of every piece on board?  (would kind of suck)
+				-		sort all pieces so layers are contiguous (this would be cool!)
 
 wat
 	.64*6 + x*5 = 8.43*.64
