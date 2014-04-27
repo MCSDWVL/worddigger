@@ -331,6 +331,7 @@ public class GameBoard : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	public GameObject ScoreJuiceObject;
 	public void OnSend()
 	{
 		var wordlookup = GameObject.FindObjectOfType<WordLookup>();
@@ -340,6 +341,18 @@ public class GameBoard : MonoBehaviour
 			var score = ScoreActiveWord();
 			Score += score;
 			Timer += AddTimePerPointScored * score;
+
+			if (ScoreJuiceObject)
+			{
+				var mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				var go = GameObject.Instantiate(ScoreJuiceObject.gameObject, mouseWorldPos, Quaternion.identity) as GameObject;
+				var juice = go.GetComponent<ScoreJuice>();
+				var uiPos = Input.mousePosition;
+				uiPos.y = Screen.height - uiPos.y;
+				juice.Pos = uiPos;
+				juice.Score = score;
+			}
+
 			foreach (var piece in ActiveWordPieces)
 			{
 				if (piece == null)
