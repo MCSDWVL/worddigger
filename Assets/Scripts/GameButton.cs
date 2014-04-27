@@ -10,6 +10,8 @@ public class GameButton : MonoBehaviour
 	public bool isDigButton = false;
 	public bool isPlayButton = false;
 	public bool isResetButton = false;
+
+	public bool ButtonEnabled = true;
 	
 	public GUIStyle Style;
 	public Vector2 Offset = Vector2.zero;
@@ -20,6 +22,10 @@ public class GameButton : MonoBehaviour
 		var screenPos = Camera.main.WorldToScreenPoint(transform.position);
 		screenPos.y = Screen.height - screenPos.y - ButtonScale.y / 2;
 		screenPos.x -= ButtonScale.x / 2;
+		if (!ButtonEnabled)
+			Style.normal.textColor = Color.grey;
+		else
+			Style.normal.textColor = Color.white;
 		GUI.Label(new Rect(screenPos.x + Offset.x, screenPos.y + Offset.y, ButtonScale.x, ButtonScale.y), "" + Text, Style);
 	}
 
@@ -27,6 +33,9 @@ public class GameButton : MonoBehaviour
 	private GameBoard _board;
 	private void OnMouseDown()
 	{
+		if (!ButtonEnabled)
+			return;
+
 		if (isSendButton)
 		{
 			_board.OnSend();
