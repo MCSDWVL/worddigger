@@ -12,6 +12,7 @@ public class GameButton : MonoBehaviour
 	public bool isPlayButton = false;
 	public bool isResetButton = false;
 	public bool isSuperButton = false;
+	public bool isEndButton = false;
 
 	public enum SuperPower { None, AllColor, AllExplode, StopTimer, ScoreMultiplier, IgnoreColor, Shuffle };
 	public SuperPower Power = SuperPower.None;
@@ -101,6 +102,10 @@ public class GameButton : MonoBehaviour
 
 			// single use!
 			ButtonEnabled = false;
+		}
+		else if (isEndButton)
+		{
+			Application.LoadLevel("ScoreBoard");
 		}
 	}
 }

@@ -28,11 +28,11 @@ TODO
 	juice on score
 	end game button
 	bottom out
-	length multipliers
-	depth score bonus
 	leaderboard screen
 	menu screen
 	other juice
 	submit hanging
 DONE
 	reduce rainbows
+	length multipliers
+	depth score bonus
