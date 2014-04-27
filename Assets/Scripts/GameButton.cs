@@ -13,6 +13,7 @@ public class GameButton : MonoBehaviour
 	public bool isSuperButton = false;
 
 	public enum SuperPower { None, AllColor, AllExplode, StopTimer, ScoreMultiplier, IgnoreColor, Shuffle };
+	public SuperPower Power = SuperPower.None;
 
 	public bool ButtonEnabled = true;
 	
@@ -39,6 +40,7 @@ public class GameButton : MonoBehaviour
 		if (!ButtonEnabled)
 			return;
 
+		_board = GameObject.FindObjectOfType<GameBoard>();
 		if (isSendButton)
 		{
 			_board.OnSend();
@@ -62,6 +64,15 @@ public class GameButton : MonoBehaviour
 		}
 		else if (isSuperButton)
 		{
+			switch (Power)
+			{
+				case SuperPower.AllColor:
+					_board.ApplyAllColorPower();
+					break;
+				default:
+					Debug.LogError("Oops don't know how to handle power " + Power);
+					break;
+			}
 		}
 	}
 }

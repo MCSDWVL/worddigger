@@ -7,6 +7,8 @@ public class GameBoard : MonoBehaviour
 	public char[] Letters = new char[]{'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',	'B', 'B','C', 'C','D', 'D', 'D', 'D','E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E','F', 'F','G', 'G', 'G','H', 'H','I', 'I', 'I', 'I', 'I', 'I', 'I', 'I', 'I','J','K','L', 'L', 'L', 'L','M', 'M','N', 'N', 'N', 'N', 'N', 'N','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O','P', 'P','Q','R', 'R', 'R', 'R', 'R', 'R','S', 'S', 'S', 'S','T', 'T', 'T', 'T', 'T', 'T','U', 'U', 'U', 'U','V', 'V','W', 'W','X','Y', 'Y','Z'};
 	public float PieceSpacing = 1f;
 
+	public int LowestDepth { get; private set; }
+
 	public int ActiveWordDepth = 0;
 	public List<GamePiece> ActiveWordPieces { get; private set; }
 	public string ActiveWord { get; private set; }
@@ -94,6 +96,10 @@ public class GameBoard : MonoBehaviour
 
 		// add it to the array!
 		GamePieces[c, r] = gamepieceScript;
+
+		// track lowest depth
+		if (depth > LowestDepth)
+			LowestDepth = depth;
 		return gamepieceScript;
 	}
 
@@ -399,6 +405,16 @@ public class GameBoard : MonoBehaviour
 		{
 			OnSend();
 			Line.enabled = false;
+		}
+	}
+
+	public void ApplyAllColorPower()
+	{
+		// TODO want this to spread from the middle for juiciness!
+		foreach (var piece in GamePieces)
+		{
+			piece.Depth = LowestDepth;
+			piece.MatchDepthColor();
 		}
 	}
 }
