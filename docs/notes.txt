@@ -26,12 +26,13 @@ juice
 
 TODO
 	juice on score
-	bottom out
 	leaderboard screen
-	menu screen
+	
 	other juice
 	submit hanging
 DONE
+	menu screen
+	bottom out
 	end game button
 	reduce rainbows
 	length multipliers
