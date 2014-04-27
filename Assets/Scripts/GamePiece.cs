@@ -11,12 +11,6 @@ public class GamePiece : MonoBehaviour
 	public Color RegularColor = new Color(1f, 0.54117647058f, 0.54117647058f, 1f);
 	public Color RegularTextColor = Color.white;
 
-	public Color PreviewColor = new Color(0.36862745098f, 0.36862745098f, 0.36862745098f, 1f);
-	public Color PreviewTextColor = new Color(0.56862745098f, 0.56862745098f, 0.56862745098f, 1f);
-
-	public Color LockColor = Color.black;
-	public Color LockTextColor = Color.grey;
-
 	public char Letter = 'X';
 	public int Score;
 	public GUIStyle Style;
@@ -96,20 +90,30 @@ public class GamePiece : MonoBehaviour
 
 	//-------------------------------------------------------------------------
 	// Use this for initialization
+	private SpriteRenderer _spriteRenderer;
 	void Start () 
 	{
 		UsedInWord = false;
+		_spriteRenderer = GetComponent<SpriteRenderer>();
 	}
 
 	//-------------------------------------------------------------------------
-	public void MatchDepthColor()
+	public void MatchDepthColor(bool setPreviousColor = false)
 	{
 		if (!IgnoreDepth)
 			RegularColor = ColorForDepth(Depth);
 		else
 			RegularColor = Color.grey;
-		var spriteRend = GetComponent<SpriteRenderer>();
-		spriteRend.color = RegularColor;
+
+		if (!_spriteRenderer)
+			_spriteRenderer = GetComponent<SpriteRenderer>();
+		if (setPreviousColor)
+			_oldColor = ColorForDepth(Mathf.Max(Depth - 1, 0));
+		else
+			_oldColor = _spriteRenderer.color;
+
+		_colorChangeTime = Time.time;
+
 		Style.normal.textColor = RegularTextColor;
 	}
 
@@ -185,16 +189,10 @@ public class GamePiece : MonoBehaviour
 	{
 		if (!Preview)
 		{
-			var spriteRend = GetComponent<SpriteRenderer>();
-			spriteRend.color = PreviewColor;
-			Style.normal.textColor = PreviewTextColor;
 			Preview = true;
 		}
 		else
 		{
-			var spriteRend = GetComponent<SpriteRenderer>();
-			spriteRend.color = RegularColor;
-			Style.normal.textColor = RegularTextColor;
 			Preview = false;
 		}
 	}
@@ -204,23 +202,28 @@ public class GamePiece : MonoBehaviour
 	{
 		if (!Locked)
 		{
-			var spriteRend = GetComponent<SpriteRenderer>();
-			spriteRend.color = LockColor;
-			Style.normal.textColor = LockTextColor;
 			Locked = true;
 		}
 		else
 		{
-			var spriteRend = GetComponent<SpriteRenderer>();
-			spriteRend.color = RegularColor;
-			Style.normal.textColor = RegularTextColor;
 			Locked = false;
 		}
 	}
 
 	//-------------------------------------------------------------------------
+	private float _colorChangeTime;
+	private Color _oldColor;
+	public float DefaultColorMatchSpeedMultiplier = 10;
+	public float ColorMatchSpeedMultiplier = 10;
 	public void Update()
 	{
 		Fresh = false;
+		var changePct = ColorMatchSpeedMultiplier*(Time.time - _colorChangeTime);
+		_spriteRenderer.color = Color.Lerp(_oldColor, RegularColor, changePct);
+
+		if (changePct > 1)
+		{
+			ColorMatchSpeedMultiplier = DefaultColorMatchSpeedMultiplier;
+		}
 	}
 }

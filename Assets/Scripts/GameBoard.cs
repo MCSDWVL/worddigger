@@ -150,7 +150,8 @@ public class GameBoard : MonoBehaviour
 		{
 			for (var r = 0; r < rows; ++r)
 			{
-				AddRandomPiece(r, c, 0, _rand);
+				var piece = AddRandomPiece(r, c, 0, _rand);
+				piece.MatchDepthColor(true);
 			}
 		}
 	}
@@ -282,7 +283,7 @@ public class GameBoard : MonoBehaviour
 
 		// add preivew beneath
 		var newPiece = AddRandomPiece(piece.Row, piece.Col, newDepth, rand);
-		newPiece.MatchDepthColor();
+		newPiece.MatchDepthColor(true);
 		newPiece.Fresh = true;
 
 		var makeSuper = rand.NextDouble() < SuperChance;
@@ -483,6 +484,10 @@ public class GameBoard : MonoBehaviour
 		foreach (var piece in GamePieces)
 		{
 			piece.Depth = LowestDepth;
+			var centerRow = Rows / 2;
+			var centerCol = Cols / 2;
+			var pieceDistance = Mathf.Abs(piece.Row - centerRow) + Mathf.Abs(piece.Col - centerCol);
+			piece.ColorMatchSpeedMultiplier = piece.DefaultColorMatchSpeedMultiplier / pieceDistance;
 			piece.MatchDepthColor();
 		}
 	}
