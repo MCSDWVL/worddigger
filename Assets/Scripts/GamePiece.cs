@@ -60,19 +60,41 @@ public class GamePiece : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	public Color[] PremadeColors;
+	public bool RepeatColorsAfterOut = true;
+	public bool DarkenColorsAfterOut = true;
+	public float DarkenStep = 0.1f;
+	public float DarkenMin = 0.1f;
 	private Color ColorForDepth(int depth)
 	{
-		var rand = new System.Random(depth);
+		var shouldRandomize = PremadeColors == null || (depth >= PremadeColors.Length && !RepeatColorsAfterOut);
 
-		// don't want it to be too white, so let's say we have to distribute .75+.75+.75 between our three colors
-		var colorBudget = .75f * 3;
-		var red = Mathf.Min((float)rand.NextDouble() * colorBudget, 1);
-		colorBudget -= red;
-		var blue = Mathf.Min((float)rand.NextDouble() * colorBudget, 1);
-		colorBudget -= blue;
-		var green = (float)rand.NextDouble() * colorBudget;
+		if (shouldRandomize)
+		{
+			var rand = new System.Random(depth);
 
-		return new Color(red, green, blue);
+			// don't want it to be too white, so let's say we have to distribute .75+.75+.75 between our three colors
+			var colorBudget = .75f * 3;
+			var red = Mathf.Min((float)rand.NextDouble() * colorBudget, 1);
+			colorBudget -= red;
+			var blue = Mathf.Min((float)rand.NextDouble() * colorBudget, 1);
+			colorBudget -= blue;
+			var green = (float)rand.NextDouble() * colorBudget;
+
+			return new Color(red, green, blue);
+		}
+		else
+		{
+			var darkenCount = DarkenColorsAfterOut ? depth / PremadeColors.Length : 0;
+			var color = PremadeColors[depth % PremadeColors.Length];
+			for (var i = 0; i < darkenCount; ++i)
+			{
+				color.r -= DarkenStep;
+				color.g -= DarkenStep;
+				color.b -= DarkenStep;
+			}
+			return color;
+		}
 	}
 
 	//-------------------------------------------------------------------------
