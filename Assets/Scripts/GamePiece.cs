@@ -35,7 +35,7 @@ public class GamePiece : MonoBehaviour
 	public bool Bomb 
 	{
 		get { return _bomb; }
-		set { _bomb = value; if (BombSprite) BombSprite.SetActive(_bomb); }
+		set { _bomb = value; if (BombSprite) BombSprite.SetActive(_bomb && !Locked); }
 	}
 	public GameObject BombSprite;
 
@@ -52,7 +52,7 @@ public class GamePiece : MonoBehaviour
 			_power = value;
 			if (BombSprite)
 			{
-				BombSprite.SetActive(_power != GameButton.SuperPower.None);
+				BombSprite.SetActive(_power != GameButton.SuperPower.None && !Locked);
 				BombSprite.GetComponent<SpriteRenderer>().sprite = GetSpriteForPower(_power);
 			}
 		}
@@ -100,7 +100,12 @@ public class GamePiece : MonoBehaviour
 	//-------------------------------------------------------------------------
 	public void MatchDepthColor(bool setPreviousColor = false)
 	{
-		if (!IgnoreDepth)
+		if (Locked)
+		{
+			RegularColor = Color.black;
+			RegularTextColor = Color.black;
+		}
+		else if (!IgnoreDepth)
 			RegularColor = ColorForDepth(Depth);
 		else
 			RegularColor = Color.grey;

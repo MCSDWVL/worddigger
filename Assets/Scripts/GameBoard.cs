@@ -87,10 +87,25 @@ public class GameBoard : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	public int MaxDepth = 30;
+	public bool BottomOut = true;
 	private GamePiece AddRandomPiece(int r, int c, int depth, System.Random rand)
 	{
 		var newGamePiece = GameObject.Instantiate(GamePiecePrefab.gameObject) as GameObject;
 		var gamepieceScript = newGamePiece.GetComponent<GamePiece>();
+		
+		// bottom out?  Or cycle back to the top?
+		if (depth >= MaxDepth)
+		{
+			if (BottomOut)
+			{
+				Debug.Log("bottoming out");
+				gamepieceScript.Locked = true;
+			}
+			else
+				depth = depth % MaxDepth;
+		}
+
 		gamepieceScript.Depth = depth;
 		gamepieceScript.Board = this;
 
@@ -437,11 +452,14 @@ public class GameBoard : MonoBehaviour
 					var gamePiece = overlapPiece.GetComponent<GamePiece>();
 					if (gamePiece)
 					{
-						if (ActiveWord.Length > 0 && ActiveWordDepth != gamePiece.Depth && !gamePiece.IgnoreDepth)
+						if (ActiveWord.Length > 0 && ((ActiveWordDepth != gamePiece.Depth && !gamePiece.IgnoreDepth) || gamePiece.Locked) )
 						{
 							OnSend();
 							return;
 						}
+
+						if (gamePiece.Locked)
+							return;
 
 						// HEY THEY'RE TRYING TO CHEAT!
 						if (ActiveWordPieces.Count > 0)

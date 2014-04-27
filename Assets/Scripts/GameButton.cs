@@ -101,7 +101,7 @@ public class GameButton : MonoBehaviour
 			}
 
 			// single use!
-			ButtonEnabled = false;
+			//ButtonEnabled = false;
 		}
 		else if (isEndButton)
 		{
