@@ -8,6 +8,8 @@ public class GameButton : MonoBehaviour
 	// this is terrible don't do it
 	public bool isSendButton = false;
 	public bool isDigButton = false;
+	public bool isPlayButton = false;
+	public bool isResetButton = false;
 	
 	public GUIStyle Style;
 	public Vector2 Offset = Vector2.zero;
@@ -25,12 +27,6 @@ public class GameButton : MonoBehaviour
 	private GameBoard _board;
 	private void OnMouseDown()
 	{
-		_board = GameObject.FindObjectOfType<GameBoard>();
-		if (!_board)
-		{
-			Debug.LogError("Oops can't find board!");
-			return;
-		}
 		if (isSendButton)
 		{
 			_board.OnSend();
@@ -38,6 +34,19 @@ public class GameButton : MonoBehaviour
 		else if (isDigButton)
 		{
 			_board.OnDig();
+		}
+		else if (isPlayButton)
+		{
+			if (NamePromptGUI.PlayerName.Length > 0)
+			{
+				NamePromptGUI.NameSet = true;
+				PlayerPrefs.SetString("PlayerName", NamePromptGUI.PlayerName);
+				Application.LoadLevel("MainGame");
+			}
+		}
+		else if (isResetButton)
+		{
+			Application.LoadLevel("MainGame");
 		}
 	}
 }

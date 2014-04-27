@@ -12,6 +12,8 @@ public class GameBoard : MonoBehaviour
 	public string ActiveWord { get; private set; }
 	public int Score { get; set; }
 
+	public static GameBoard Instance { get; private set; }
+
 	public int Rows { get; private set; }
 	public int Cols { get; private set; }
 
@@ -29,6 +31,7 @@ public class GameBoard : MonoBehaviour
 	{
 		ActiveWord = "";
 		ActiveWordPieces = new List<GamePiece>();
+		Instance = this;
 	}
 
 	//-------------------------------------------------------------------------
@@ -320,7 +323,11 @@ public class GameBoard : MonoBehaviour
 	public void Update()
 	{
 		if (Timer <= 0)
+		{
+			SceneDataPasser.LastScore = Score;
+			Application.LoadLevel("ScoreBoard");
 			return;
+		}
 
 		Timer -= Time.deltaTime;
 
