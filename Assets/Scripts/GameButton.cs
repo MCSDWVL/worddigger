@@ -4,6 +4,7 @@ using System.Collections;
 public class GameButton : MonoBehaviour
 {
 	public string Text = "";
+	public SpriteRenderer Sprite;
 
 	// this is terrible don't do it
 	public bool isSendButton = false;
@@ -16,7 +17,7 @@ public class GameButton : MonoBehaviour
 	public SuperPower Power = SuperPower.None;
 
 	public bool ButtonEnabled = true;
-	
+
 	public GUIStyle Style;
 	public Vector2 Offset = Vector2.zero;
 	public Vector2 ButtonScale; 
@@ -31,6 +32,15 @@ public class GameButton : MonoBehaviour
 		else
 			Style.normal.textColor = Color.white;
 		GUI.Label(new Rect(screenPos.x + Offset.x, screenPos.y + Offset.y, ButtonScale.x, ButtonScale.y), "" + Text, Style);
+	}
+
+
+	private void Update()
+	{
+		if (Sprite)
+		{
+			Sprite.color = ButtonEnabled ? Color.white : Color.grey;
+		}
 	}
 
 	// more terrible code
@@ -88,6 +98,9 @@ public class GameButton : MonoBehaviour
 					Debug.LogError("Oops don't know how to handle power " + Power);
 					break;
 			}
+
+			// single use!
+			ButtonEnabled = false;
 		}
 	}
 }

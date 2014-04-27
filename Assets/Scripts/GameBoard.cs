@@ -219,6 +219,7 @@ public class GameBoard : MonoBehaviour
 
 	//-------------------------------------------------------------------------
 	public float BombChance = 0.05f;
+	public float SuperChance = 0.01f;
 	public void GetRidOfPiece(GamePiece piece, int newDepth, System.Random rand)
 	{
 		if (piece.BeingDestroyed || piece.Fresh)
@@ -259,7 +260,15 @@ public class GameBoard : MonoBehaviour
 		newPiece.MatchDepthColor();
 		newPiece.Fresh = true;
 
-		var makeBomb = rand.NextDouble() < BombChance;
+		var makeSuper = rand.NextDouble() < SuperChance;
+		if (makeSuper)
+		{
+			var powers = new List<GameButton.SuperPower>(System.Enum.GetValues(typeof(GameButton.SuperPower)) as GameButton.SuperPower[]);
+			powers.Remove(GameButton.SuperPower.None);
+			newPiece.GrantPower = powers[rand.Next(0, powers.Count)];
+		}
+
+		var makeBomb = !makeSuper && rand.NextDouble() < BombChance;
 		if (makeBomb)
 		{
 			Debug.Log("Making bomb");
@@ -282,6 +291,13 @@ public class GameBoard : MonoBehaviour
 				if (piece == null)
 					continue;
 
+				// grant power
+				if (piece.GrantPower != GameButton.SuperPower.None)
+				{
+					GrantPower(piece.GrantPower);
+				}
+
+				// get rid of piece
 				GetRidOfPiece(piece, ActiveWordDepth+1, _rand);
 			}
 			Camera.main.GetComponent<CameraShaker>().Shake();
@@ -492,5 +508,13 @@ public class GameBoard : MonoBehaviour
 	public void ApplyStopTimePower()
 	{
 		TimeStopTime = TimeStopTimePowerupSetTime;
+	}
+
+	public void GrantPower(GameButton.SuperPower power)
+	{
+		var buttons = GameObject.FindObjectsOfType<GameButton>();
+		foreach (var button in buttons)
+			if (button.Power == power)
+				button.ButtonEnabled = true;
 	}
 }

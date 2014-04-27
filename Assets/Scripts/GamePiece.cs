@@ -47,6 +47,53 @@ public class GamePiece : MonoBehaviour
 
 	public static int Multiplier { get; set; }
 
+	// grant a power?!
+
+	private GameButton.SuperPower _power = GameButton.SuperPower.None;
+	public GameButton.SuperPower GrantPower
+	{
+		get { return _power; }
+		set
+		{
+			_power = value;
+			if (BombSprite)
+			{
+				BombSprite.SetActive(_power != GameButton.SuperPower.None);
+				BombSprite.GetComponent<SpriteRenderer>().sprite = GetSpriteForPower(_power);
+			}
+		}
+	}
+
+	public Sprite RainbowSprite;
+	public Sprite ClockSprite;
+	public Sprite ShadesSprite;
+	public Sprite ShuffleSprite;
+	public Sprite CarrotSprite;
+	public Sprite ScoreSprite;
+
+	Sprite GetSpriteForPower(GameButton.SuperPower power)
+	{
+		switch (power)
+		{
+			case GameButton.SuperPower.AllColor:
+				return RainbowSprite;
+			case GameButton.SuperPower.AllExplode:
+				return CarrotSprite;
+			case GameButton.SuperPower.IgnoreColor:
+				return ShadesSprite;
+			case GameButton.SuperPower.None:
+				return null;
+			case GameButton.SuperPower.ScoreMultiplier:
+				return ScoreSprite;
+			case GameButton.SuperPower.Shuffle:
+				return ShuffleSprite;
+			case GameButton.SuperPower.StopTimer:
+				return ClockSprite;
+			default:
+				return null;
+		}
+	}
+
 	//-------------------------------------------------------------------------
 	// Use this for initialization
 	void Start () 
