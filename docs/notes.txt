@@ -23,3 +23,14 @@ juice
 	highlight good things (bombs, powerups)
 	animate score increase
 	increase score with depth
+
+TODO
+	juice on score
+	reduce rainbows
+	end game button
+	bottom out
+	length multipliers
+	leaderboard screen
+	menu screen
+	other juice
+	submit hanging

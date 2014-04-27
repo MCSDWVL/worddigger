@@ -246,6 +246,7 @@ public class GameBoard : MonoBehaviour
 	//-------------------------------------------------------------------------
 	public float BombChance = 0.05f;
 	public float SuperChance = 0.01f;
+	public float RainbowChance = 0.01f;
 	public void GetRidOfPiece(GamePiece piece, int newDepth, System.Random rand)
 	{
 		if (piece.BeingDestroyed || piece.Fresh)
@@ -286,11 +287,21 @@ public class GameBoard : MonoBehaviour
 		newPiece.MatchDepthColor(true);
 		newPiece.Fresh = true;
 
-		var makeSuper = rand.NextDouble() < SuperChance;
+		var makeRainbow = rand.NextDouble() < RainbowChance;
+		if (makeRainbow)
+		{
+			newPiece.GrantPower = GameButton.SuperPower.AllColor;
+		}
+
+		var makeSuper = !makeRainbow && rand.NextDouble() < SuperChance;
 		if (makeSuper)
 		{
 			var powers = new List<GameButton.SuperPower>(System.Enum.GetValues(typeof(GameButton.SuperPower)) as GameButton.SuperPower[]);
 			powers.Remove(GameButton.SuperPower.None);
+			
+			// all color handled separately
+			powers.Remove(GameButton.SuperPower.AllColor);
+			
 			newPiece.GrantPower = powers[rand.Next(0, powers.Count)];
 		}
 
@@ -496,6 +507,7 @@ public class GameBoard : MonoBehaviour
 	{
 		foreach (var piece in GamePieces)
 			GetRidOfPiece(piece, piece.Depth + 1, _rand);
+		Camera.main.GetComponent<CameraShaker>().Shake();
 	}
 
 	public float IgnoreColorTime = 0f;
@@ -505,6 +517,10 @@ public class GameBoard : MonoBehaviour
 		IgnoreColorTime = IgnoreColorPowerupSetTime;
 		foreach (var piece in GamePieces)
 		{
+			var centerRow = Rows / 2;
+			var centerCol = Cols / 2;
+			var pieceDistance = Mathf.Abs(piece.Row - centerRow) + Mathf.Abs(piece.Col - centerCol);
+			piece.ColorMatchSpeedMultiplier = piece.DefaultColorMatchSpeedMultiplier / pieceDistance;
 			piece.IgnoreDepth = true;
 			piece.MatchDepthColor();
 		}
