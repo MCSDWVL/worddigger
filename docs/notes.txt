@@ -25,12 +25,11 @@ juice
 	increase score with depth
 
 TODO
-	juice on score
 	leaderboard screen
-	
 	other juice
 	submit hanging
 DONE
+	juice on score
 	menu screen
 	bottom out
 	end game button
