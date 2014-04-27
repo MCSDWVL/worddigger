@@ -88,11 +88,11 @@ public class ScoreBoard : MonoBehaviour
 	public float BoardScreenWidth = .80f;
 	public void OnGUI()
 	{
-		GUI.TextField(new Rect(Screen.width * (1-BoardScreenWidth)/2, 0, Screen.width * BoardScreenWidth, Screen.height), _topNamesWithLineReturn, Style);
+		GUI.Label(new Rect(Screen.width * (1-BoardScreenWidth)/2, 0, Screen.width * BoardScreenWidth, Screen.height), _topNamesWithLineReturn, Style);
 
 		var scoreStyle = new GUIStyle(Style);
 		scoreStyle.alignment = TextAnchor.UpperRight;
-		GUI.TextField(new Rect(Screen.width * (1 - BoardScreenWidth)/2, 0, Screen.width * BoardScreenWidth, Screen.height), _topScoresWithLineReturn, scoreStyle);
+		GUI.TextField(new Rect(Screen.width * (1 - BoardScreenWidth)/2, 0, Screen.width * BoardScreenWidth, Screen.height-200), _topScoresWithLineReturn, scoreStyle);
 	}
 }
 
