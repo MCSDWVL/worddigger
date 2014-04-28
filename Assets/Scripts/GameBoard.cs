@@ -419,6 +419,7 @@ public class GameBoard : MonoBehaviour
 	public float MouseActivateDistance = .3f;
 	public void Update()
 	{
+		BoxDimensionHack.x = Screen.width * 6.7f / 9f;
 		if (Timer <= 0)
 		{
 			SceneDataPasser.LastScore = Score;
