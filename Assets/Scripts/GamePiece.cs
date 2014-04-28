@@ -170,7 +170,8 @@ public class GamePiece : MonoBehaviour
 
 		var pointStyle = new GUIStyle(Style);
 		pointStyle.fontSize /= 2;
-		GUI.Label(new Rect(screenPos.x + OffsetScore.x, screenPos.y + OffsetScore.y, PieceSize, PieceSize), "" + (Multiplier*Score), pointStyle);
+		var scaledOffset = OffsetScore * Screen.width / 430f;
+		GUI.Label(new Rect(screenPos.x + scaledOffset.x, screenPos.y + scaledOffset.y, PieceSize, PieceSize), "" + (Multiplier * Score), pointStyle);
 	}
 
 	//-------------------------------------------------------------------------
@@ -220,8 +221,14 @@ public class GamePiece : MonoBehaviour
 	private Color _oldColor;
 	public float DefaultColorMatchSpeedMultiplier = 10;
 	public float ColorMatchSpeedMultiplier = 10;
+	private int _defaultFontSize = 0;
 	public void Update()
 	{
+		// hack to handle scaling
+		if (_defaultFontSize == 0)
+			_defaultFontSize = Style.fontSize;
+		Style.fontSize = (int)(_defaultFontSize * Screen.width / 430f);
+
 		Fresh = false;
 		var changePct = ColorMatchSpeedMultiplier*(Time.time - _colorChangeTime);
 		_spriteRenderer.color = Color.Lerp(_oldColor, RegularColor, changePct);

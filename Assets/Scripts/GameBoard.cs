@@ -172,9 +172,11 @@ public class GameBoard : MonoBehaviour
 	}
 
 	//-------------------------------------------------------------------------
+	private float _defaultFontSize;
 	public void Start()
 	{
 		FillBoard(6, 4);
+		_defaultFontSize = Style.fontSize;
 	}
 
 	//-------------------------------------------------------------------------
@@ -419,7 +421,10 @@ public class GameBoard : MonoBehaviour
 	public float MouseActivateDistance = .3f;
 	public void Update()
 	{
+		// hacks to fix scaling
 		BoxDimensionHack.x = Screen.width * 6.7f / 9f;
+		Style.fontSize = (int)(_defaultFontSize * Screen.width / 430f);
+
 		if (Timer <= 0)
 		{
 			SceneDataPasser.LastScore = Score;

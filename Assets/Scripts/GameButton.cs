@@ -35,9 +35,14 @@ public class GameButton : MonoBehaviour
 		GUI.Label(new Rect(screenPos.x + Offset.x, screenPos.y + Offset.y, ButtonScale.x, ButtonScale.y), "" + Text, Style);
 	}
 
-
+	private int _defaultFontSize = 0;
 	private void Update()
 	{
+		// hack to handle scaling
+		if (_defaultFontSize == 0)
+			_defaultFontSize = Style.fontSize;
+		Style.fontSize = (int)(_defaultFontSize * Screen.width / 430f);
+
 		if (Sprite)
 		{
 			Sprite.color = ButtonEnabled ? Color.white : Color.grey;
