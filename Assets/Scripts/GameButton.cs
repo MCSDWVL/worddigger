@@ -110,6 +110,7 @@ public class GameButton : MonoBehaviour
 		}
 		else if (isEndButton)
 		{
+			SceneDataPasser.LastScore = _board.Score;
 			Application.LoadLevel("ScoreBoard");
 		}
 	}
