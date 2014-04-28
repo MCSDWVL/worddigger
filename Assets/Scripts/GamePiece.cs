@@ -11,6 +11,7 @@ public class GamePiece : MonoBehaviour
 	public Color RegularColor = new Color(1f, 0.54117647058f, 0.54117647058f, 1f);
 	public Color RegularTextColor = Color.white;
 
+	public string HACKSETLETTER = "";
 	public char Letter = 'X';
 	public int Score;
 	public GUIStyle Style;
@@ -224,6 +225,11 @@ public class GamePiece : MonoBehaviour
 	private int _defaultFontSize = 0;
 	public void Update()
 	{
+		if(HACKSETLETTER != "")
+		{
+			Letter = HACKSETLETTER.ToCharArray()[0];
+			HACKSETLETTER = "";
+		}
 		// hack to handle scaling
 		if (_defaultFontSize == 0)
 			_defaultFontSize = Style.fontSize;

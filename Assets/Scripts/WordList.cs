@@ -3494,65 +3494,70 @@ public class WordList : MonoBehaviour
     public static string DecompressString(string inString, string first3, bool saveDecompressedValue = true)
     {
          // if we've already decompressed it, it will end with a comma
-	    if (!Regex.Match(inString,"(/,$/)").Success) 
-	    {
-		    // We've not looked at this entry before - uncompress it, etc.
-		    inString = Regex.Replace(inString, "W", "le");
-		    inString = Regex.Replace(inString, "K", "al");
-		    inString = Regex.Replace(inString, "F", "man");
-		    inString = Regex.Replace(inString, "U", "ous");
-		    inString = Regex.Replace(inString, "M", "ment");
-		    inString = Regex.Replace(inString, "B", "able");
-		    inString = Regex.Replace(inString, "C", "ic");
-		    inString = Regex.Replace(inString, "X", "on");
-		    inString = Regex.Replace(inString, "Q", "ng");
-		    inString = Regex.Replace(inString, "R", "ier");
-		    inString = Regex.Replace(inString, "S", "st");
-		    inString = Regex.Replace(inString, "Y", "ly");
-		    inString = Regex.Replace(inString, "J", "ally");
-		    inString = Regex.Replace(inString, "E", "es");
-		    inString = Regex.Replace(inString, "L", "less");
-		    inString = Regex.Replace(inString, "Z", "ies");
-		    inString = Regex.Replace(inString, "P", "tic");
-		    inString = Regex.Replace(inString, "I", "iti");
-		    inString = Regex.Replace(inString, "V", "tion");
-		    inString = Regex.Replace(inString, "H", "zation");
-		    inString = Regex.Replace(inString, "A", "abiliti");
-		    inString = Regex.Replace(inString, "O", "ologi");
-		    inString = Regex.Replace(inString, "T", "est");
-		    inString = Regex.Replace(inString, "D", "ed");
-		    inString = Regex.Replace(inString, "N", "ness");
-		    inString = Regex.Replace(inString, "G", "ing");
-		    inString = "," + inString + ",";
-		    // May have prefixes on prefixes, so need to repeat the replace.
-		    var more = true;
-		    while (more) 
-		    {
-			    var theLength = inString.Length;
-			    inString = Regex.Replace(inString, re, "$1$1");
-			    inString = Regex.Replace(inString, re0, "$1$2$1");
-			    inString = Regex.Replace(inString, re1, "$1$2$1");
-			    inString = Regex.Replace(inString, re2, "$1$2$1");
-			    inString = Regex.Replace(inString, re3, "$1$2$1");
-			    inString = Regex.Replace(inString, re4, "$1$2$1");
-			    inString = Regex.Replace(inString, re5, "$1$2$1");
-			    inString = Regex.Replace(inString, re6, "$1$2$1");
-			    inString = Regex.Replace(inString, re7, "$1$2$1");
-			    inString = Regex.Replace(inString, re8, "$1$2$1");
-			    inString = Regex.Replace(inString, re9, "$1$2$1");
-			    more = (theLength != inString.Length);
-		    }
-		    if (Regex.Match(inString, "[0-@+]").Success)
-		    {
-			    Debug.LogError("decompression oops!");
-		    }
+		if (!Regex.Match(inString, @"(\w,$)").Success)
+		{
+			// We've not looked at this entry before - uncompress it, etc.
+			inString = Regex.Replace(inString, "W", "le");
+			inString = Regex.Replace(inString, "K", "al");
+			inString = Regex.Replace(inString, "F", "man");
+			inString = Regex.Replace(inString, "U", "ous");
+			inString = Regex.Replace(inString, "M", "ment");
+			inString = Regex.Replace(inString, "B", "able");
+			inString = Regex.Replace(inString, "C", "ic");
+			inString = Regex.Replace(inString, "X", "on");
+			inString = Regex.Replace(inString, "Q", "ng");
+			inString = Regex.Replace(inString, "R", "ier");
+			inString = Regex.Replace(inString, "S", "st");
+			inString = Regex.Replace(inString, "Y", "ly");
+			inString = Regex.Replace(inString, "J", "ally");
+			inString = Regex.Replace(inString, "E", "es");
+			inString = Regex.Replace(inString, "L", "less");
+			inString = Regex.Replace(inString, "Z", "ies");
+			inString = Regex.Replace(inString, "P", "tic");
+			inString = Regex.Replace(inString, "I", "iti");
+			inString = Regex.Replace(inString, "V", "tion");
+			inString = Regex.Replace(inString, "H", "zation");
+			inString = Regex.Replace(inString, "A", "abiliti");
+			inString = Regex.Replace(inString, "O", "ologi");
+			inString = Regex.Replace(inString, "T", "est");
+			inString = Regex.Replace(inString, "D", "ed");
+			inString = Regex.Replace(inString, "N", "ness");
+			inString = Regex.Replace(inString, "G", "ing");
+			inString = "," + inString + ",";
+			// May have prefixes on prefixes, so need to repeat the replace.
+			var more = true;
+			while (more)
+			{
+				var theLength = inString.Length;
+				inString = Regex.Replace(inString, re, "$1$1");
+				inString = Regex.Replace(inString, re0, "$1$2$1");
+				inString = Regex.Replace(inString, re1, "$1$2$1");
+				inString = Regex.Replace(inString, re2, "$1$2$1");
+				inString = Regex.Replace(inString, re3, "$1$2$1");
+				inString = Regex.Replace(inString, re4, "$1$2$1");
+				inString = Regex.Replace(inString, re5, "$1$2$1");
+				inString = Regex.Replace(inString, re6, "$1$2$1");
+				inString = Regex.Replace(inString, re7, "$1$2$1");
+				inString = Regex.Replace(inString, re8, "$1$2$1");
+				inString = Regex.Replace(inString, re9, "$1$2$1");
+				more = (theLength != inString.Length);
+			}
+
+			Debug.Log(inString);
+
+			if (Regex.Match(inString, "[0-@+]").Success)
+			{
+				Debug.LogError("decompression oops!");
+			}
 
 			// save out the decompressed string so we don't have to decompress it next time
 			if (saveDecompressedValue)
 			{
 				ThreeLetterPrefixWordList[first3] = inString;
 			}
-	    }
+		}
+		else
+			Debug.Log("Already decompressed");
 
         return inString;
     }

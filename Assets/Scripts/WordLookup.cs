@@ -27,9 +27,15 @@ public class WordLookup : MonoBehaviour
         }
 
         theEntry = WordList.DecompressString(theEntry, first3);
+		
+		// remove trailing and leading comma
+		//theEntry = theEntry.Remove(0, 1);
+		//theEntry = theEntry.Remove(theEntry.Length - 1, 1);
        
 	    var restOfWord = Regex.Replace(theWord, "^...?", "");
-        return (theEntry.IndexOf("," + restOfWord + ",") != -1);
+		var valid = (theEntry.IndexOf("," + restOfWord + ",") != -1);
+		Debug.Log("Saying " + theWord + " is valid? " + valid + " " + theEntry);
+        return valid;
     }
 
 	/*
@@ -56,10 +62,14 @@ public class WordLookup : MonoBehaviour
 	//-----------------------------------------------------------------------------
 	private void UnitTest1()
 	{
-		string[] wordsToTest = { "Start", "Testicle", "Vertibrate", "Fucking", "Love", "what", "qi", "x", "qwefasdf" };
+		/*string[] wordsToTest = { "Start", "Testicle", "Vertibrate", "Fucking", "Love", "what", "qi", "x", "qwefasdf" };
 		foreach (var word in wordsToTest)
 		{
 			Debug.Log(string.Format("Testing {0}, is word {1}, score {2}", word, CheckValidWord(word), "score?"));
 		}
+		 * */
+		CheckValidWord("KAR");
+		CheckValidWord("KAR");
+		CheckValidWord("TOY");
 	}
 }
